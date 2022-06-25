@@ -27,6 +27,13 @@ void Scene::init()
 		0.0f, 0.0f, 1.0f,
 	};
 
+	GLfloat texCoords[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.5f, 1.0f
+	};
+
+
 	GLuint vboPosition;
 	glGenBuffers(1, &vboPosition);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPosition);
@@ -36,6 +43,11 @@ void Scene::init()
 	glGenBuffers(1, &vboColor);
 	glBindBuffer(GL_ARRAY_BUFFER, vboColor);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(colorData), colorData, GL_STATIC_DRAW);
+
+	GLuint vboTexture;
+	glGenBuffers(1, &vboTexture);
+	glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
 
 	//GLuint VAO;
 	glGenVertexArrays(1, &VAO);
@@ -49,9 +61,14 @@ void Scene::init()
 	glBindBuffer(GL_ARRAY_BUFFER, vboColor);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+
 	glBindVertexArray(0);
 
 	ResourceManager::loadShader("../src/shader/sprite.vs", "../src/shader/sprite.fs", "sprite");
+	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
 	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), 10.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	//ResourceManager::getShader("sprite").use();
@@ -59,6 +76,7 @@ void Scene::init()
 	//glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(rotation));
 
 	ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotation, true);
+	texture = ResourceManager::getTexture("wall");
 }
 
 void Scene::update(GLfloat dt)
@@ -94,8 +112,12 @@ void Scene::draw()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//shader.use();
 	ResourceManager::getShader("sprite").use();
+
+	glActiveTexture(GL_TEXTURE0);
+	texture.bind();
+	glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
+
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);

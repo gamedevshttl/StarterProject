@@ -3,6 +3,7 @@
 
 #include "Node.h"
 #include "Render/Shader.h"
+#include "Render/Texture.h"
 #include "glCore/gl_core_4_4.h"
 #include <GLFW/glfw3.h>
 
@@ -19,6 +20,7 @@ private:
 	void inGuiRenderGUI();
 private:
 	Shader shader;
+	Texture texture;
 	GLuint VAO;
 
 	float rotation;
