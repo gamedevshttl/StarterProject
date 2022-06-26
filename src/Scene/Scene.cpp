@@ -13,8 +13,11 @@ Scene::Scene(std::string_view tagScene)
 	:Node(tagScene)
 {}
 
-void Scene::init()
+void Scene::init(int aScreenWidth, int aScreenHeight)
 {
+	screenWidth = aScreenWidth;
+	screenHeight = aScreenHeight;
+
 	GLfloat positionData[] = {
 	-0.5f, -0.5f, 0.0f,
 	 0.5f, -0.5f, 0.0f,
@@ -66,18 +69,30 @@ void Scene::init()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
 
 	glBindVertexArray(0);
+	glEnable(GL_DEPTH_TEST);
 
 	ResourceManager::loadShader("../src/shader/sprite.vs", "../src/shader/sprite.fs", "sprite");
 	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
 	ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
 	texture = ResourceManager::getTexture("wall");
+
+	model = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+	projection = glm::perspective(glm::radians(45.0f), screenWidth / static_cast<float>(screenHeight), 0.1f, 100.0f);
 }
 
 void Scene::update(GLfloat dt)
 {
-	rotationMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-	ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
+	//rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
+
+	model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	ResourceManager::getShader("sprite").setMatrix4("model", model, true);
+	ResourceManager::getShader("sprite").setMatrix4("view", view, true);
+	ResourceManager::getShader("sprite").setMatrix4("projection", projection, true);
+
 }
 
 void Scene::imGuiNewFrame()
@@ -91,9 +106,12 @@ void Scene::imGuiNewFrame()
 void Scene::inGuiRenderGUI()
 {
 	// render your GUI
-	ImGui::Begin("Demo window");
-	ImGui::Button("Hello!");
-	ImGui::SliderFloat("rotation", &rotation, 0, 2 * glm::pi<float>());
+	ImGui::Begin("Setting");
+	if (ImGui::Button("Reset"))
+	{
+		rotation = 0;
+	}
+	ImGui::SliderFloat("rotation", &rotation, 0, 360);
 	ImGui::End();
 
 	// Render dear imgui into screen
@@ -106,7 +124,7 @@ void Scene::draw()
 	imGuiNewFrame();
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ResourceManager::getShader("sprite").use();
 

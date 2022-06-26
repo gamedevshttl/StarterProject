@@ -48,7 +48,7 @@ bool Application::init()
 	ImGui::StyleColorsDark();
 
 	scene = std::make_shared<Scene>("scene");
-	scene->init();
+	scene->init(windowWidth, windowHeight);
 
 	return true;
 }
