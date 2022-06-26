@@ -24,6 +24,7 @@ private:
 	GLuint VAO;
 
 	float rotation;
+	glm::mat4 rotationMatrix;
 };
 
 #endif

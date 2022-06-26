@@ -19,8 +19,8 @@ bool Application::init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	int windowWidth = 800;
-	int windowHeight = 600;
+	int windowWidth = 1024;
+	int windowHeight = 768;
 
 	window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
