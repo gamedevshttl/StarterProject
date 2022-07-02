@@ -1,6 +1,9 @@
 #### How to build
-To build this project using cmake:
 
+Install conan (require Python 3.5)
+    pip install conan
+
+To build this project using cmake:
     mkdir build
     cd build
     conan install ..
