@@ -30,6 +30,8 @@ set(SOURCE_CODE src/main.cpp
 				src/Scene/Node.cpp
 				src/Scene/Scene.h
 				src/Scene/Scene.cpp
+				src/Camera/Camera.h
+				src/Camera/Camera.cpp
 				src/Application.h
 				src/Application.cpp
 				src/Gameplay/Game.h

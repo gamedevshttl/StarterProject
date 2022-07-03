@@ -18,6 +18,8 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	screenWidth = aScreenWidth;
 	screenHeight = aScreenHeight;
 
+	camera.init(aScreenWidth / 2.f, aScreenHeight / 2.f);
+
 	GLfloat positionData[] = {
 	-0.5f, -0.5f, 0.0f,
 	 0.5f, -0.5f, 0.0f,
@@ -78,21 +80,28 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	texture = ResourceManager::getTexture("wall");
 
 	model = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 	projection = glm::perspective(glm::radians(45.0f), screenWidth / static_cast<float>(screenHeight), 0.1f, 100.0f);
+}
+
+void Scene::keyboardCallback(int key, int scancode, int action, int mode)
+{
+	camera.processKeyboard(key, action);
+}
+
+void Scene::mouseCallback(double xpos, double ypos)
+{
+	camera.processMouseMovement(xpos, ypos);
 }
 
 void Scene::update(GLfloat dt)
 {
-	//rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-	//ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
-
 	model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
 
-	ResourceManager::getShader("sprite").setMatrix4("model", model, true);
-	ResourceManager::getShader("sprite").setMatrix4("view", view, true);
-	ResourceManager::getShader("sprite").setMatrix4("projection", projection, true);
+	camera.updateCameraVectors(dt);
 
+	ResourceManager::getShader("sprite").setMatrix4("model", model, true);
+	ResourceManager::getShader("sprite").setMatrix4("view", camera.getViewMatrix(), true);
+	ResourceManager::getShader("sprite").setMatrix4("projection", projection, true);
 }
 
 void Scene::imGuiNewFrame()

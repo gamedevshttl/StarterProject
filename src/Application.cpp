@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 
 #include <chrono>
-
+#include <iostream>
 
 bool Application::init()
 {
@@ -31,7 +31,8 @@ bool Application::init()
 
 	glfwMakeContextCurrent(window);
 
-	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
+	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
+	{
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		return false;
@@ -39,6 +40,7 @@ bool Application::init()
 
 	glViewport(0, 0, windowWidth, windowHeight);
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow*, int width, int height) {glViewport(0, 0, width, height); });
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -49,6 +51,29 @@ bool Application::init()
 
 	scene = std::make_shared<Scene>("scene");
 	scene->init(windowWidth, windowHeight);
+
+	auto keyboardCallback = [](GLFWwindow* window, int key, int scancode, int action, int mode) {
+
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		{
+			glfwSetWindowShouldClose(window, GL_TRUE);
+			return;
+		}
+
+		auto self = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		if (self->scene)
+			self->scene->keyboardCallback(key, scancode, action, mode);
+	};
+
+	auto mouseCallback = [](GLFWwindow* window, double xpos, double ypos) {
+		auto self = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		if (self->scene)
+			self->scene->mouseCallback(xpos, ypos);
+	};
+
+	glfwSetWindowUserPointer(window, static_cast<void*>(this));
+	glfwSetKeyCallback(window, keyboardCallback);
+	glfwSetCursorPosCallback(window, mouseCallback);
 
 	return true;
 }
