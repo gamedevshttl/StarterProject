@@ -17,42 +17,20 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 {
 	screenWidth = aScreenWidth;
 	screenHeight = aScreenHeight;
-
 	camera.init(aScreenWidth / 2.f, aScreenHeight / 2.f);
 
-	GLfloat positionData[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-	};
-
-	GLfloat colorData[] = {
-		1.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-	};
-
-	GLfloat texCoords[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		0.5f, 1.0f
-	};
-
+	std::vector<GLfloat> positionData = ResourceManager::loadData("../resources/data/cube_position.json");
+	std::vector<GLfloat> texCoords = ResourceManager::loadData("../resources/data/cube_texture.json");
 
 	GLuint vboPosition;
 	glGenBuffers(1, &vboPosition);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPosition);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(positionData), positionData, GL_STATIC_DRAW);
-
-	GLuint vboColor;
-	glGenBuffers(1, &vboColor);
-	glBindBuffer(GL_ARRAY_BUFFER, vboColor);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colorData), colorData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, positionData.size() * sizeof(GLfloat), &positionData.front(), GL_STATIC_DRAW);
 
 	GLuint vboTexture;
 	glGenBuffers(1, &vboTexture);
 	glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(texCoords), &texCoords.front(), GL_STATIC_DRAW);
 
 	//GLuint VAO;
 	glGenVertexArrays(1, &VAO);
@@ -63,12 +41,8 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, vboColor);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-
-	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
 
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
@@ -142,7 +116,7 @@ void Scene::draw()
 	glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
 
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 
 	inGuiRenderGUI();

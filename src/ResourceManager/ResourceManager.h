@@ -4,6 +4,7 @@
 #include "Render/Shader.h"
 #include "Render/Texture.h"
 #include <map>
+#include <vector>
 
 class ResourceManager
 {
@@ -16,7 +17,9 @@ public:
 	static Texture loadTexture(const GLchar *textureFile, GLboolean alpha, std::string_view name);
 	static Texture getTexture(std::string_view name);
 
-	static void clear();	
+	static void clear();
+
+	static std::vector<GLfloat> loadData(const GLchar* dataFile);
 
 	static std::map<std::string, Shader> shaders;
 	static std::map<std::string, Texture> textures;

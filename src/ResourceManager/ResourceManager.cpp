@@ -4,6 +4,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <nlohmann/json.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -44,6 +46,23 @@ void ResourceManager::clear()
 
 	shaders.clear();
 	textures.clear();
+}
+
+std::vector<GLfloat> ResourceManager::loadData(const GLchar* dataFile)
+{
+	std::ifstream file(dataFile);
+	std::stringstream fileStream;
+	fileStream << file.rdbuf();
+	file.close();
+
+	nlohmann::json myjson = nlohmann::json::parse(fileStream.str());
+	auto& data = myjson["data"];
+
+	std::vector<GLfloat> dataVector;
+	for (auto it = data.begin(); it != data.end(); ++it)
+		dataVector.emplace_back(it->get<float>());
+
+	return dataVector;
 }
 
 Shader ResourceManager::loadShaderFromFile(const GLchar *vertexShaderFile, const GLchar *fragmentShaderFile)
