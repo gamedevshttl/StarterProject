@@ -31,11 +31,15 @@ private:
 	Texture texture;
 	GLuint VAO;
 
+
 	float rotation{ 0.f };
 	glm::mat4 rotationMatrix;
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 projection;
+
+	GLuint lampVAO;
+	glm::mat4 lampModel;
 
 	Camera camera;
 };

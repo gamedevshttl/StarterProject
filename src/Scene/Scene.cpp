@@ -35,8 +35,8 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	//GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	glEnableVertexAttribArray(0);
 
+	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPosition);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
@@ -44,10 +44,20 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
 
+
+	glGenVertexArrays(1, &lampVAO);
+	glBindVertexArray(lampVAO);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vboPosition);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+
+
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
 
 	ResourceManager::loadShader("../src/shader/sprite.vs", "../src/shader/sprite.fs", "sprite");
+	ResourceManager::loadShader("../src/shader/lamp.vs", "../src/shader/lamp.fs", "lamp");
 	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
 	ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
@@ -55,6 +65,11 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 
 	model = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	projection = glm::perspective(glm::radians(45.0f), screenWidth / static_cast<float>(screenHeight), 0.1f, 100.0f);
+
+	lampModel = glm::mat4(1.0f);
+	lampModel = glm::translate(lampModel, glm::vec3(1.2f, 1.0f, 2.0f));
+	lampModel = glm::scale(lampModel, glm::vec3(0.2f));
+	ResourceManager::getShader("lamp").setMatrix4("model", lampModel, true);
 }
 
 void Scene::keyboardCallback(int key, int scancode, int action, int mode)
@@ -76,6 +91,9 @@ void Scene::update(GLfloat dt)
 	ResourceManager::getShader("sprite").setMatrix4("model", model, true);
 	ResourceManager::getShader("sprite").setMatrix4("view", camera.getViewMatrix(), true);
 	ResourceManager::getShader("sprite").setMatrix4("projection", projection, true);
+
+	ResourceManager::getShader("lamp").setMatrix4("view", camera.getViewMatrix(), true);
+	ResourceManager::getShader("lamp").setMatrix4("projection", projection, true);
 }
 
 void Scene::imGuiNewFrame()
@@ -116,6 +134,12 @@ void Scene::draw()
 	glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
 
 	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+
+
+	ResourceManager::getShader("lamp").use();
+	glBindVertexArray(lampVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 
