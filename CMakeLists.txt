@@ -50,6 +50,8 @@ else()
 	set(CMAKE_CXX_STANDARD 17)
 endif()
 
+set(CONAN_DISABLE_CHECK_COMPILER TRUE)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
