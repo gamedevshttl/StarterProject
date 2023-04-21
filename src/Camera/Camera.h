@@ -12,8 +12,10 @@ public:
 	void processKeyboard(int key, int action);
 	void processMouseMovement(double xpos, double ypos);
 	void updateCameraVectors(GLfloat dt);
+	glm::vec3 getPosition();
 
-	glm::vec3 position{ glm::vec3(0.0f, 0.0f, 3.0f) };
+private:
+	glm::vec3 position{ glm::vec3(0.0f, 0.0f, 7.0f) };
 	glm::vec3 front{ glm::vec3(0.0f, 0.0f, -1.0f) };
 	glm::vec3 up{ glm::vec3(0.0f, 1.0f, 0.0f) };
 	GLfloat speed{ 0.5f };

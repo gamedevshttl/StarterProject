@@ -63,3 +63,8 @@ void Camera::updateCameraVectors(GLfloat dt)
 	if (pressed[GLFW_KEY_D])
 		position += glm::normalize(glm::cross(front, up)) * speed * dt;
 }
+
+glm::vec3 Camera::getPosition()
+{
+	return position;
+}
