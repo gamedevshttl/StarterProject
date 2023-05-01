@@ -36,13 +36,11 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPosition);
+	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
-	//glBindVertexArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
@@ -65,8 +63,8 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
 	ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
-	ResourceManager::getShader("sprite").setVector3f("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
-	ResourceManager::getShader("sprite").setVector3f("lightColor", 1.0f, 1.0f, 1.0f);
+	ResourceManager::getShader("sprite").setVector3f("Light.Pos", glm::vec3(1.2f, 1.0f, 2.0f));
+	ResourceManager::getShader("sprite").setVector3f("Light.Color", 1.0f, 1.0f, 1.0f);
 
 	texture = ResourceManager::getTexture("wall");
 
@@ -77,9 +75,6 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	lampModel = glm::translate(lampModel, glm::vec3(1.2f, 1.0f, 2.0f));
 	lampModel = glm::scale(lampModel, glm::vec3(0.2f));
 	ResourceManager::getShader("lamp").setMatrix4("model", lampModel, true);
-
-	GLint numUniforms = 0;
-	glGetProgramInterfaceiv(ResourceManager::getShader("sprite").getId(), GL_UNIFORM, GL_ACTIVE_RESOURCES, &numUniforms);
 }
 
 void Scene::keyboardCallback(int key, int scancode, int action, int mode)
