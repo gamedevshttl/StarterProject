@@ -1,5 +1,8 @@
 #version 430 core
 
+subroutine vec3 shadeModelType();
+subroutine uniform shadeModelType shadeModel;
+
 layout (location = 0) out vec4 fragColor;
 
 // in vec3 color;
@@ -19,10 +22,13 @@ struct LightInfo
 };
 uniform LightInfo Light;
 
-void main(){
+float ambientStrength = 0.1f;
+float specularStrength = 0.5f;
 
+subroutine (shadeModelType)
+vec3 phongModel()
+{
     // Ambient
-    float ambientStrength = 0.1f;
     vec3 ambient = ambientStrength * Light.Color;
 
     // Diffuse 
@@ -32,7 +38,6 @@ void main(){
     vec3 diffuse = diff * Light.Color;
     
     // Specular
-    float specularStrength = 0.5f;
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     vec3 specular = vec3(0.0);
@@ -41,6 +46,26 @@ void main(){
         specular = specularStrength * spec * Light.Color;
     }
 
-    vec4 result = vec4(vec3(ambient + diffuse + specular), 1.0f);
+    return vec3(ambient + diffuse + specular);
+}
+
+subroutine (shadeModelType)
+vec3 diffuseModel()
+{
+    // Ambient
+    vec3 ambient = ambientStrength * Light.Color;
+
+    // Diffuse 
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(Light.Pos - fragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * Light.Color;
+
+    return vec3(ambient + diffuse);
+}
+
+void main(){
+    //vec4 result = vec4(phongModel(), 1.0f);
+    vec4 result = vec4(shadeModel(), 1.0f);
 	fragColor = result * texture(image, texCoord);
 }

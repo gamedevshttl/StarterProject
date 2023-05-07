@@ -62,13 +62,12 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	ResourceManager::loadShader("../src/shader/lamp.vs", "../src/shader/lamp.fs", "lamp");
 	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
-	ResourceManager::getShader("sprite").setMatrix4("rotationMatrix", rotationMatrix, true);
+	ResourceManager::getShader("sprite").use();
 	ResourceManager::getShader("sprite").setVector3f("Light.Pos", glm::vec3(1.2f, 1.0f, 2.0f));
 	ResourceManager::getShader("sprite").setVector3f("Light.Color", 1.0f, 1.0f, 1.0f);
 
 	texture = ResourceManager::getTexture("wall");
 
-	model = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	projection = glm::perspective(glm::radians(45.0f), screenWidth / static_cast<float>(screenHeight), 0.1f, 100.0f);
 
 	lampModel = glm::mat4(1.0f);
@@ -89,11 +88,8 @@ void Scene::mouseCallback(double xpos, double ypos)
 
 void Scene::update(GLfloat dt)
 {
-	model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
-
 	camera.updateCameraVectors(dt);
 
-	ResourceManager::getShader("sprite").setMatrix4("model", model, true);
 	ResourceManager::getShader("sprite").setMatrix4("view", camera.getViewMatrix(), true);
 	ResourceManager::getShader("sprite").setMatrix4("projection", projection, true);
 	ResourceManager::getShader("sprite").setVector3f("viewPos", camera.getPosition());
@@ -134,15 +130,39 @@ void Scene::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ResourceManager::getShader("sprite").use();
+	{
+		glm::mat4 model;
+		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		ResourceManager::getShader("sprite").setMatrix4("model", model, true);
 
-	glActiveTexture(GL_TEXTURE0);
-	texture.bind();
-	glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
+		GLuint diffuse = glGetSubroutineIndex(ResourceManager::getShader("sprite").getId(), GL_FRAGMENT_SHADER, "diffuseModel");
+		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &diffuse);
 
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
+		glActiveTexture(GL_TEXTURE0);
+		texture.bind();
+		glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
 
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+	}
+	{
+		glm::mat4 model;
+		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 0.0f));
+		ResourceManager::getShader("sprite").setMatrix4("model", model, true);
+
+		GLuint phong = glGetSubroutineIndex(ResourceManager::getShader("sprite").getId(), GL_FRAGMENT_SHADER, "phongModel");
+		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &phong);
+		
+		glActiveTexture(GL_TEXTURE0);
+		texture.bind();
+		glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
+
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+	}
 
 	ResourceManager::getShader("lamp").use();
 	glBindVertexArray(lampVAO);

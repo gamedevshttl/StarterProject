@@ -21,5 +21,5 @@ void main(){
 	//gl_Position = rotationMatrix * vec4(vertexPosition, 1.0);
 	gl_Position = projection * view * model * vec4(vertexPosition, 1.0);
 	normal = vertexNormal;
-	fragPos = vertexPosition;
+	fragPos = vec3(model * vec4(vertexPosition, 1.0f));
 }
