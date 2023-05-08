@@ -111,3 +111,11 @@ void Shader::setMatrix4(const GLchar *name, const glm::mat4& matrix, GLboolean u
 		use();
 	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
+
+void Shader::setSubroutine(GLenum shaderType, const GLchar* name, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	GLuint diffuse = glGetSubroutineIndex(id, shaderType, name);
+	glUniformSubroutinesuiv(shaderType, 1, &diffuse);
+}

@@ -135,8 +135,7 @@ void Scene::draw()
 		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
 		ResourceManager::getShader("sprite").setMatrix4("model", model, true);
 
-		GLuint diffuse = glGetSubroutineIndex(ResourceManager::getShader("sprite").getId(), GL_FRAGMENT_SHADER, "diffuseModel");
-		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &diffuse);
+		ResourceManager::getShader("sprite").setSubroutine(GL_FRAGMENT_SHADER, "diffuseModel");
 
 		glActiveTexture(GL_TEXTURE0);
 		texture.bind();
@@ -152,9 +151,8 @@ void Scene::draw()
 		model = glm::translate(model, glm::vec3(1.5f, 0.0f, 0.0f));
 		ResourceManager::getShader("sprite").setMatrix4("model", model, true);
 
-		GLuint phong = glGetSubroutineIndex(ResourceManager::getShader("sprite").getId(), GL_FRAGMENT_SHADER, "phongModel");
-		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &phong);
-		
+		ResourceManager::getShader("sprite").setSubroutine(GL_FRAGMENT_SHADER, "phongModel");
+
 		glActiveTexture(GL_TEXTURE0);
 		texture.bind();
 		glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
