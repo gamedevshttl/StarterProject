@@ -60,11 +60,16 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 
 	ResourceManager::loadShader("../src/shader/sprite.vs", "../src/shader/sprite.fs", "sprite");
 	ResourceManager::loadShader("../src/shader/lamp.vs", "../src/shader/lamp.fs", "lamp");
+	ResourceManager::loadShader("../src/shader/discard_sprite.vs", "../src/shader/discard_sprite.fs", "discard_sprite");
 	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
 	ResourceManager::getShader("sprite").use();
 	ResourceManager::getShader("sprite").setVector3f("Light.Pos", glm::vec3(1.2f, 1.0f, 2.0f));
 	ResourceManager::getShader("sprite").setVector3f("Light.Color", 1.0f, 1.0f, 1.0f);
+
+	ResourceManager::getShader("discard_sprite").use();
+	ResourceManager::getShader("discard_sprite").setVector3f("Light.Pos", glm::vec3(1.2f, 1.0f, 2.0f));
+	ResourceManager::getShader("discard_sprite").setVector3f("Light.Color", 1.0f, 1.0f, 1.0f);
 
 	texture = ResourceManager::getTexture("wall");
 
@@ -93,6 +98,10 @@ void Scene::update(GLfloat dt)
 	ResourceManager::getShader("sprite").setMatrix4("view", camera.getViewMatrix(), true);
 	ResourceManager::getShader("sprite").setMatrix4("projection", projection, true);
 	ResourceManager::getShader("sprite").setVector3f("viewPos", camera.getPosition());
+
+	ResourceManager::getShader("discard_sprite").setMatrix4("view", camera.getViewMatrix(), true);
+	ResourceManager::getShader("discard_sprite").setMatrix4("projection", projection, true);
+	ResourceManager::getShader("discard_sprite").setVector3f("viewPos", camera.getPosition());
 
 	ResourceManager::getShader("lamp").setMatrix4("view", camera.getViewMatrix(), true);
 	ResourceManager::getShader("lamp").setMatrix4("projection", projection, true);
@@ -152,6 +161,21 @@ void Scene::draw()
 		ResourceManager::getShader("sprite").setMatrix4("model", model, true);
 
 		ResourceManager::getShader("sprite").setSubroutine(GL_FRAGMENT_SHADER, "phongModel");
+
+		glActiveTexture(GL_TEXTURE0);
+		texture.bind();
+		glUniform1i(glGetUniformLocation(texture.id, "image"), 0);
+
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+	}
+	{
+		glm::mat4 model;
+		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(3.0f, 0.0f, 0.0f));
+		ResourceManager::getShader("discard_sprite").setMatrix4("model", model, true);
+		ResourceManager::getShader("discard_sprite").setSubroutine(GL_FRAGMENT_SHADER, "phongModel");
 
 		glActiveTexture(GL_TEXTURE0);
 		texture.bind();

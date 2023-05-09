@@ -38,6 +38,10 @@ set(SOURCE_CODE src/main.cpp
 				src/Gameplay/Game.cpp
 				src/shader/sprite.vs
 				src/shader/sprite.fs
+				src/shader/lamp.vs
+				src/shader/lamp.fs
+				src/shader/discard_sprite.vs
+				src/shader/discard_sprite.fs
 				)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
