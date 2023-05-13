@@ -7,8 +7,11 @@
 #include "Camera/Camera.h"
 #include "glCore/gl_core_4_4.h"
 #include <GLFW/glfw3.h>
+#include <memory>
 
 struct GLFWwindow;
+class Torus;
+class Teapot;
 
 class Scene : public Node
 {
@@ -42,6 +45,9 @@ private:
 	glm::mat4 lampModel;
 
 	Camera camera;
+
+	std::shared_ptr<Torus> pTorus;
+	std::shared_ptr<Teapot> pTeapot;
 };
 
 #endif

@@ -7,6 +7,8 @@
 #include "imgui.h"
 #include "Dependencies/imgui_impl_glfw.h"
 #include "Dependencies/imgui_impl_opengl3.h"
+#include "Object/torus.h"
+#include "Object/teapot.h"
 
 
 Scene::Scene(std::string_view tagScene)
@@ -61,6 +63,8 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	ResourceManager::loadShader("../src/shader/sprite.vs", "../src/shader/sprite.fs", "sprite");
 	ResourceManager::loadShader("../src/shader/lamp.vs", "../src/shader/lamp.fs", "lamp");
 	ResourceManager::loadShader("../src/shader/discard_sprite.vs", "../src/shader/discard_sprite.fs", "discard_sprite");
+	ResourceManager::loadShader("../src/shader/flat.vert", "../src/shader/flat.frag", "flat");
+	ResourceManager::loadShader("../src/shader/twoside.vert", "../src/shader/twoside.frag", "twoside");
 	ResourceManager::loadTexture("../resources/textures/wall.jpg", GL_TRUE, "wall");
 
 	ResourceManager::getShader("sprite").use();
@@ -79,6 +83,21 @@ void Scene::init(int aScreenWidth, int aScreenHeight)
 	lampModel = glm::translate(lampModel, glm::vec3(1.2f, 1.0f, 2.0f));
 	lampModel = glm::scale(lampModel, glm::vec3(0.2f));
 	ResourceManager::getShader("lamp").setMatrix4("model", lampModel, true);
+
+	pTorus = std::make_shared<Torus>(0.7f, 0.3f, 50, 50);
+	pTeapot = std::make_shared<Teapot>(13, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f)));
+
+	std::vector<std::string> shaderName{ "flat" , "twoside" };
+	for (auto name : shaderName) {
+		ResourceManager::getShader(name).use();
+		ResourceManager::getShader(name).setVector3f("Material.Kd", 0.9f, 0.5f, 0.3f);
+		ResourceManager::getShader(name).setVector3f("Light.Ld", 1.0f, 1.0f, 1.0f);
+		ResourceManager::getShader(name).setVector3f("Material.Ka", 0.9f, 0.5f, 0.3f);
+		ResourceManager::getShader(name).setVector3f("Light.La", 0.4f, 0.4f, 0.4f);
+		ResourceManager::getShader(name).setVector3f("Material.Ks", 0.8f, 0.8f, 0.8f);
+		ResourceManager::getShader(name).setVector3f("Light.Ls", 1.0f, 1.0f, 1.0f);
+		ResourceManager::getShader(name).setFloat("Material.Shininess", 100.0f);
+	}
 }
 
 void Scene::keyboardCallback(int key, int scancode, int action, int mode)
@@ -105,6 +124,7 @@ void Scene::update(GLfloat dt)
 
 	ResourceManager::getShader("lamp").setMatrix4("view", camera.getViewMatrix(), true);
 	ResourceManager::getShader("lamp").setMatrix4("projection", projection, true);
+
 }
 
 void Scene::imGuiNewFrame()
@@ -186,10 +206,65 @@ void Scene::draw()
 		glBindVertexArray(0);
 	}
 
+	{
+		glm::mat4 model;
+		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
+		ResourceManager::getShader("discard_sprite").setMatrix4("model", model, true);
+		ResourceManager::getShader("discard_sprite").setSubroutine(GL_FRAGMENT_SHADER, "phongModel");
+
+		if (pTorus)
+			pTorus->render();
+
+	}
+	{
+		glm::mat4 modelLight(glm::mat4(1.0f));
+		modelLight = glm::translate(modelLight, glm::vec3(1.2f, 1.0f, 2.0f));
+
+		ResourceManager::getShader("flat").use();
+		ResourceManager::getShader("flat").setVector4f("Light.Position", camera.getViewMatrix() * modelLight * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+		glm::mat4 model;
+		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0f));
+
+		glm::mat4 mv = camera.getViewMatrix() * model;
+		ResourceManager::getShader("flat").setMatrix4("ModelViewMatrix", mv);
+		ResourceManager::getShader("flat").setMatrix3("NormalMatrix",
+			glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
+		ResourceManager::getShader("flat").setMatrix4("MVP", projection * mv);
+
+		if (pTorus)
+			pTorus->render();
+	}
+
+	{
+		glm::mat4 modelLight(glm::mat4(1.0f));
+		modelLight = glm::translate(modelLight, glm::vec3(1.2f, 1.0f, 2.0f));
+
+		ResourceManager::getShader("twoside").use();
+		ResourceManager::getShader("twoside").setVector4f("Light.Position", camera.getViewMatrix() * modelLight * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+		glm::mat4 model;
+		model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(2.5f, 1.5f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.5f));
+
+		glm::mat4 mv = camera.getViewMatrix() * model;
+		ResourceManager::getShader("twoside").setMatrix4("ModelViewMatrix", mv);
+		ResourceManager::getShader("twoside").setMatrix3("NormalMatrix",
+			glm::mat3(glm::vec3(mv[0]), glm::vec3(mv[1]), glm::vec3(mv[2])));
+		ResourceManager::getShader("twoside").setMatrix4("MVP", projection * mv);
+
+		if (pTeapot)
+			pTeapot->render();
+	}
+
 	ResourceManager::getShader("lamp").use();
 	glBindVertexArray(lampVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
+
 
 	inGuiRenderGUI();
 }

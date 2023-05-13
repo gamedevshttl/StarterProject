@@ -36,12 +36,24 @@ set(SOURCE_CODE src/main.cpp
 				src/Application.cpp
 				src/Gameplay/Game.h
 				src/Gameplay/Game.cpp
+				src/Object/drawable.h
+				src/Object/teapot.h
+				src/Object/torus.h
+				src/Object/trianglemesh.h
+				src/Object/teapot.cpp
+				src/Object/teapotdata.h
+				src/Object/torus.cpp
+				src/Object/trianglemesh.cpp
 				src/shader/sprite.vs
 				src/shader/sprite.fs
 				src/shader/lamp.vs
 				src/shader/lamp.fs
 				src/shader/discard_sprite.vs
 				src/shader/discard_sprite.fs
+				src/shader/flat.frag
+				src/shader/flat.vert
+				src/shader/twoside.frag
+				src/shader/twoside.vert
 				)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
