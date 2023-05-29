@@ -30,6 +30,8 @@ set(SOURCE_CODE src/main.cpp
 				src/Scene/Node.cpp
 				src/Scene/Scene.h
 				src/Scene/Scene.cpp
+				src/Scene/SceneLight.h
+				src/Scene/SceneLight.cpp
 				src/Camera/Camera.h
 				src/Camera/Camera.cpp
 				src/Application.h
@@ -44,6 +46,10 @@ set(SOURCE_CODE src/main.cpp
 				src/Object/teapotdata.h
 				src/Object/torus.cpp
 				src/Object/trianglemesh.cpp
+				src/Object/objmesh.h
+				src/Object/objmesh.cpp
+				src/Object/aabb.h
+				src/Object/utils.h
 				src/shader/sprite.vs
 				src/shader/sprite.fs
 				src/shader/lamp.vs

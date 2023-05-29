@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Scene/Scene.h"
+#include "Scene/SceneLight.h"
 
 #include "imgui.h"
 #include "Dependencies/imgui_impl_glfw.h"
@@ -49,7 +50,8 @@ bool Application::init()
 	ImGui_ImplOpenGL3_Init("#version 440");
 	ImGui::StyleColorsDark();
 
-	scene = std::make_shared<Scene>("scene");
+	//scene = std::make_shared<Scene>("scene");
+	scene = std::make_shared<SceneLight>("sceneLight");
 	scene->init(windowWidth, windowHeight);
 
 	auto keyboardCallback = [](GLFWwindow* window, int key, int scancode, int action, int mode) {

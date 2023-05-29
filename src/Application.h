@@ -7,6 +7,7 @@
 
 struct GLFWwindow;
 class Scene;
+class SceneLight;
 
 class Application
 {
@@ -16,6 +17,7 @@ public:
 	void stop();
 private:
 	GLFWwindow* window;	
-	std::shared_ptr<Scene> scene;
+	//std::shared_ptr<Scene> scene;
+	std::shared_ptr<SceneLight> scene;
 };
 
