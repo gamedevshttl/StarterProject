@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Scene/Scene.h"
 #include "Scene/SceneLight.h"
+#include "Scene/SceneTexture.h"
 
 #include "imgui.h"
 #include "Dependencies/imgui_impl_glfw.h"
@@ -20,8 +21,8 @@ bool Application::init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	int windowWidth = 1024;
-	int windowHeight = 768;
+	int windowWidth = 2048;
+	int windowHeight = 1300;
 
 	window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)
@@ -51,7 +52,8 @@ bool Application::init()
 	ImGui::StyleColorsDark();
 
 	//scene = std::make_shared<Scene>("scene");
-	scene = std::make_shared<SceneLight>("sceneLight");
+	//scene = std::make_shared<SceneLight>("sceneLight");
+	scene = std::make_shared<SceneTexture>("sceneTexture");
 	scene->init(windowWidth, windowHeight);
 
 	auto keyboardCallback = [](GLFWwindow* window, int key, int scancode, int action, int mode) {

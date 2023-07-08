@@ -23,10 +23,85 @@ Shader ResourceManager::getShader(std::string_view name)
 	return shaders[name.data()];
 }
 
+unsigned char* loadPixels(const std::string& fName, int& width, int& height) {
+	int bytesPerPix;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load(fName.c_str(), &width, &height, &bytesPerPix, 4);
+	return data;
+}
+
 Texture ResourceManager::loadTexture(const GLchar *textureFile, GLboolean alpha, std::string_view name)
 {
-	textures[name.data()] = loadTextureFromFile(textureFile, alpha);
-	return textures[name.data()];
+	//textures[name.data()] = loadTextureFromFile(textureFile, alpha);
+	//return textures[name.data()];
+
+	Texture texture;
+
+	int width, height;
+	unsigned char* data = loadPixels(textureFile, width, height);
+
+	if (data != nullptr) {
+		GLuint tex;
+		glGenTextures(1, &texture.id);
+		glBindTexture(GL_TEXTURE_2D, texture.id);
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		stbi_image_free(data);
+		textures[name.data()] = texture;
+	}
+	return texture;
+}
+
+
+Texture ResourceManager::loadCubeMap(const GLchar* textureFile, std::string_view name)
+{
+	Texture texture;
+
+	glGenTextures(1, &texture.id);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id);
+
+	const char* suffixes[] = { "posx", "negx", "posy", "negy", "posz", "negz" };
+	GLuint targets[] = {
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+			GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+			GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	};
+
+	stbi_set_flip_vertically_on_load(true);
+	GLint w, h;
+
+	const std::string& baseName = textureFile;
+	// Load the first one to get width/height
+	std::string texName = baseName + "_" + suffixes[0] + ".png";
+	GLubyte* data = loadPixels(texName.c_str(), w, h);
+
+	// Allocate immutable storage for the whole cube map texture
+	glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, GL_RGBA8, w, h);
+
+	glTexSubImage2D(targets[0], 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	stbi_image_free(data);
+
+	// Load the other 5 cube-map faces
+	for (int i = 1; i < 6; i++) {
+		std::string texName = baseName + "_" + suffixes[i] + ".png";
+		GLubyte* data = loadPixels(texName.c_str(), w, h);
+		glTexSubImage2D(targets[i], 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		stbi_image_free(data);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	textures[name.data()] = texture;
+
+	return texture;
 }
 
 Texture ResourceManager::getTexture(std::string_view name)
@@ -92,9 +167,11 @@ Shader ResourceManager::loadShaderFromFile(const GLchar *vertexShaderFile, const
 Texture ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
 {
 	Texture texture;
+	GLuint imageFormat;
 	if (alpha) {
-		texture.internalFormat = GL_RGBA;
-		texture.imageFormat = GL_RGBA;
+		//texture.internalFormat = GL_RGBA;
+		//texture.imageFormat = GL_RGBA;
+		imageFormat = GL_RGBA;
 	}
 
 	int width, height, nr_channels;
@@ -104,13 +181,13 @@ Texture ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha
 	if (image) {
 		GLenum format;
 		if (nr_channels == 1)
-			texture.imageFormat = GL_RED;
+			imageFormat = GL_RED;
 		else if (nr_channels == 3)
-			texture.imageFormat = GL_RGB;
+			imageFormat = GL_RGB;
 		else if (nr_channels == 4)
-			texture.imageFormat = GL_RGBA;
+			imageFormat = GL_RGBA;
 
-		texture.generate(width, height, image);
+		//texture.generate(width, height, imageFormat, image);
 		stbi_image_free(image);
 	}
 	else {

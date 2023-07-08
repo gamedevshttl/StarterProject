@@ -67,7 +67,6 @@ void Shader::setFloat(const GLchar* name, GLfloat value, GLboolean useShader)
 	if (useShader)
 		use();
 	glUniform1f(glGetUniformLocation(id, name), value);
-
 }
 
 void Shader::setInt(const GLchar* name, GLint value, GLboolean useShader)
@@ -125,4 +124,60 @@ void Shader::setSubroutine(GLenum shaderType, const GLchar* name, GLboolean useS
 		use();
 	GLuint diffuse = glGetSubroutineIndex(id, shaderType, name);
 	glUniformSubroutinesuiv(shaderType, 1, &diffuse);
+}
+
+void Shader::setUniform(const GLchar* name, GLfloat value, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniform1f(glGetUniformLocation(id, name), value);
+}
+
+void Shader::setUniform(const GLchar* name, GLint value, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniform1i(glGetUniformLocation(id, name), value);
+}
+
+void Shader::setUniform(const GLchar* name, const glm::vec2& value, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniform2f(glGetUniformLocation(id, name), value.x, value.y);
+}
+
+void Shader::setUniform(const GLchar* name, GLfloat x, GLfloat y, GLfloat z, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniform3f(glGetUniformLocation(id, name), x, y, z);
+}
+
+void Shader::setUniform(const GLchar* name, const glm::vec3& value, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniform3f(glGetUniformLocation(id, name), value.x, value.y, value.z);
+}
+
+void Shader::setUniform(const GLchar* name, const glm::vec4& value, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniform4f(glGetUniformLocation(id, name), value.x, value.y, value.z, value.w);
+}
+
+void Shader::setUniform(const GLchar* name, const glm::mat3& matrix, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniformMatrix3fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void Shader::setUniform(const GLchar* name, const glm::mat4& matrix, GLboolean useShader)
+{
+	if (useShader)
+		use();
+	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }

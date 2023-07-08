@@ -7,19 +7,19 @@ class Texture
 {
 public:
 	Texture();
-	void generate(GLuint aWidth, GLuint aHeight, unsigned char* data);
+	//void generate(GLuint width, GLuint height, GLuint imageFormat, unsigned char* data);
 	void bind() const;
 
 	GLuint id;
-	GLuint width = 0;
-	GLuint height = 0;
-	GLuint internalFormat = GL_RGB;
-	GLuint imageFormat = GL_RGB;
+	//GLuint width = 0;
+	//GLuint height = 0;
+	//GLuint internalFormat = GL_RGB;
+	//GLuint imageFormat = GL_RGB;
 
-	GLuint wrapT = GL_REPEAT;
-	GLuint wrapS = GL_REPEAT;
-	GLuint filterMin = GL_LINEAR;
-	GLuint filterMax = GL_LINEAR;
+	//GLuint wrapT = GL_REPEAT;
+	//GLuint wrapS = GL_REPEAT;
+	//GLuint filterMin = GL_LINEAR;
+	//GLuint filterMax = GL_LINEAR;
 
 };
 

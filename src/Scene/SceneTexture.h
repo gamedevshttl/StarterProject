@@ -1,5 +1,5 @@
-#ifndef SCENELIGHT_H
-#define SCENELIGHT_H
+#ifndef SCENETEXTURE_H
+#define SCENETEXTURE_H
 
 #include "SceneBase.h"
 #include "Render/Shader.h"
@@ -14,20 +14,14 @@ struct GLFWwindow;
 class Torus;
 class Teapot;
 class ObjMesh;
+class Cube;
+class SkyBox;
 
-//struct lightPosition
-//{
-//	lightPosition(float aX, float aZ) : x(aX), z(aZ)
-//	{}
-//
-//	float x;
-//	float z;
-//};
 
-class SceneLight : public SceneBase
+class SceneTexture : public SceneBase
 {
 public:
-	SceneLight(std::string_view tagScene);
+	SceneTexture(std::string_view tagScene);
 	void init(int screenWidth, int screenHeight);
 	void keyboardCallback(int key, int scancode, int action, int mode);
 	void mouseCallback(double xpos, double ypos);
@@ -45,6 +39,9 @@ private:
 	Texture texture;
 	GLuint VAO;
 
+	GLuint renderTex;
+	GLuint fboHandle;
+	GLuint whiteTexHandle;
 
 	float rotation{ 0.f };
 	glm::mat4 rotationMatrix;
@@ -61,6 +58,9 @@ private:
 	std::shared_ptr<Teapot> pTeapot;
 	std::unique_ptr<ObjMesh> pMesh;
 	std::vector<lightPosition> lightPosVector;
+	std::shared_ptr<Cube> pCube;
+	std::unique_ptr<ObjMesh> pOgre;
+	std::shared_ptr<SkyBox> pSkyBox;
 
 	float angle = 0.0;
 };

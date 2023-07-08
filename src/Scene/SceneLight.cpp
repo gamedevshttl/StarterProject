@@ -13,7 +13,7 @@
 
 
 SceneLight::SceneLight(std::string_view tagScene)
-	:Node(tagScene)
+	:SceneBase(tagScene)
 {}
 
 void SceneLight::init(int aScreenWidth, int aScreenHeight)

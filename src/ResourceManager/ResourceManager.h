@@ -15,6 +15,7 @@ public:
 	static Shader getShader(std::string_view name);
 
 	static Texture loadTexture(const GLchar *textureFile, GLboolean alpha, std::string_view name);
+	static Texture loadCubeMap(const GLchar* textureFile, std::string_view name);
 	static Texture getTexture(std::string_view name);
 
 	static void clear();

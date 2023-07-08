@@ -6,8 +6,7 @@
 //#include <string_view>
 
 struct GLFWwindow;
-class Scene;
-class SceneLight;
+class SceneBase;
 
 class Application
 {
@@ -17,7 +16,6 @@ public:
 	void stop();
 private:
 	GLFWwindow* window;	
-	//std::shared_ptr<Scene> scene;
-	std::shared_ptr<SceneLight> scene;
+	std::shared_ptr<SceneBase> scene;
 };
 
