@@ -2,6 +2,7 @@
 #include "Scene/Scene.h"
 #include "Scene/SceneLight.h"
 #include "Scene/SceneTexture.h"
+#include "Scene/SceneFBO.h"
 
 #include "imgui.h"
 #include "Dependencies/imgui_impl_glfw.h"
@@ -53,7 +54,8 @@ bool Application::init()
 
 	//scene = std::make_shared<Scene>("scene");
 	//scene = std::make_shared<SceneLight>("sceneLight");
-	scene = std::make_shared<SceneTexture>("sceneTexture");
+	//scene = std::make_shared<SceneTexture>("sceneTexture");
+	scene = std::make_shared<SceneFBO>("sceneFBO");
 	scene->init(windowWidth, windowHeight);
 
 	auto keyboardCallback = [](GLFWwindow* window, int key, int scancode, int action, int mode) {

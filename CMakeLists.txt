@@ -36,6 +36,8 @@ set(SOURCE_CODE src/main.cpp
 				src/Scene/SceneLight.cpp
 				src/Scene/SceneTexture.h
 				src/Scene/SceneTexture.cpp
+				src/Scene/SceneFBO.h
+				src/Scene/SceneFBO.cpp
 				src/Camera/Camera.h
 				src/Camera/Camera.cpp
 				src/Application.h
